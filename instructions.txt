@@ -1,0 +1,100 @@
+1. Install letsencrypt on mac:
+	 brew install letsencrypt
+
+2. create a directory 
+	mkdir ~/letsencrypt
+	cd ~/letsencrypt
+
+3. run the following command
+   
+   certbot certonly \
+    --manual \
+    --preferred-challenges=dns \
+    --email your_email@terasrl.it \
+    --agree-tos \
+    --config-dir ./config \
+    --logs-dir ./logs \
+    --work-dir ./workdir \
+    -d www.beeta.services
+
+4. Deploy the TXT DNS record to Amazon AWS
+	go to Route53 -> Hosted Zone -> beeta.services
+
+	Click add record -> Choose type TXT
+
+         Name of Record:  _acme-challenge.www.beeta.services
+         Value of Record: <Value you got from the previous stage>
+
+	Wait a minute or so for the propagation of DNS record, you can check on google if the record is propagated 
+		https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.www.beeta.services
+
+5. You should have all your certificates inside ~/letsencrypt/config/archive/www.beeta.services folder, 4 files
+
+6. Copy these files into your AWS machine  	 
+	scp -i /Users/tera/Desktop/Beeta_server/beeta_server.pem -r ~/letsencrypt/config/archive/www.beeta.services ubuntu@<AWS_ELASTIC_IP>:/home/ubuntu
+
+7. You should import the created certificates to the AWS certificate Manager
+	Go to AWS Certificate Manager -> Certificati
+	
+	If a record exists for www.beeta.services Delete those records.
+	Note: If Amazon says Certificates are in use and you can not delete them You should go to Load Balancer of EC2
+	
+	7.1 Go to EC2 -> Load Balancers
+		Select BeetaServicesLb
+	
+		You see two listeners on the Panel Below. The One for HTTPS:443 has an associated certificate Which is (www.beeta.services)
+		Delete that Listener.
+
+	We will continue with Load Balancer Listener a bit later.
+
+8. Go back to AWS Certificate Manager
+	Request a new Certificate 
+		Select Request a public certificate 
+		Next page put www.beeta.services inside the Name of Domain Box
+		Select Validation with DNS (Default option)
+		Dont change anything else and create the certificate.
+		Amazon shows a green box on top that says View Created Certificate
+		Click on the green box and Save the CNAME Record Name and Record Value of that certificate
+
+9. Go to Route53 -> Hosted Zone -> Beeta.services again
+	Add a Record 
+	Choose type CNAME
+	Put as the Name of Record the CNAME Name, and value the CNAME value from previous step	
+	Wait for a minute for propagation, then go on AWS Certificate Manager, the certificate should be in 'Emesso' or Emmited State Which a green checkmark
+
+10. Import Created Certificates in Step 3 to AWS Certificate Manager
+	Select checkbox of the Created Certificate for www.beeta.services
+	Click Import Certificate on the left panel
+	You will see 3 Boxes on the web page One for certificate(cert.pem), one for private key(privkey.pem) and last one for fullchain(fullchain.pem).
+	
+	first cat ~/letsencrypt/config/archive/cert1.pem and put the value inside the first AWS webpage box
+	second cat ~/letsencrypt/config/archive/privkey1.pem and put the value inside the 2nd AWS webpage box
+	lastly cat ~/letsencrypt/config/archive/fullchain.pem and put the value inside the 3rd AWS webpage box
+	
+	If you have done the steps correctly generated certificate should be imported inside AWS Certificate public.
+	Now You should see two certifiactes, One of Type Imported and other Of type Released by Amazon
+	Remember the Certificate ID of the one Released by Amazon for next step
+	
+	
+10. Assign the Certificate to the Load Balancer
+	Go back to EC2 -> Load Balancers 
+	Select Load Balancer, Click Add listener
+	Select HTTPS:443
+	Select the Forwarding
+	Select the Certificate ID from the previous step (released by Amazon)
+	Finish the Setup
+
+11. Go to the AWS EC2 machine in console
+	COPY the 4 cert files inside the fodler /home/ubuntu/www.beeta.services/ (created in step 6) to the 
+		/home/ubuntu/remote-backend/beetaRemoteBackEnd/data/certbot/conf/live/www.beeta.services folder, remember if the name of the files are privkey1.pem remove the 1
+		from them
+
+12. Once finished you just have to Clean all previous dockers, remove the previous volumens and run
+      sudo docker-compose up
+
+13. Voila ... You should have SSL enabled on your server.
+
+=================
+Created With Love By Moss Foobar
+
+ 

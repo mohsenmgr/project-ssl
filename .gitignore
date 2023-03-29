@@ -1,0 +1,35 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Output of 'npm pack'
+*.tgz
+
+# Development environment settings directories
+.idea
+*.iml
+.project
+
+# currently used config.json
+/configs/config.json
+
+/openhab-cloud.iml
+algorithm/docs/.~lock.*
+.vscode/launch.json
+public/img/categories/bk/*.bk
+algorithm/docs/*.csv
+
+
+# Script to create stub thing
+/mongoScripts/createThing.sh
+requesttracker/models/*.js
+sandbox/test.js
+
+.DS_Store

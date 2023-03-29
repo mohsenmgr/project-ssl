@@ -1,0 +1,61 @@
+version: '3.3'
+services:
+  app-1:
+    container_name: app-1
+    build:
+      context: ./
+      dockerfile: ./docker/node/Dockerfile
+    volumes:
+      - shared-volume:/opt/openhabcloud
+    links:
+      - redis
+    networks:
+      - ohcloud-network
+    ports:
+      - 3000:3000
+    restart: always
+  redis:
+    image: redis:3.2
+    restart: always
+    command:
+      [
+        "redis-server",
+        "--bind",
+        "redis",
+        "--port",
+        "6379",
+        "--requirepass",
+        "secret"
+      ]
+    networks:
+      - ohcloud-network
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - "80:80"
+      - "443:443" 
+    networks:
+      - ohcloud-network
+    links:
+      - app-1:app-1
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+      - shared-volume:/opt/openhabcloud
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+networks:
+  ohcloud-network:
+    driver: bridge
+volumes:
+  shared-volume:
+  redis-data:
+    driver: local
