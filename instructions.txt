@@ -98,3 +98,27 @@
 Created With Love By Moss Foobar
 
  
+Useful links:
+
+Super Useful Guide => https://itnext.io/using-letsencrypt-ssl-certificates-in-aws-certificate-manager-c2bc3c6ae10
+
+Super Useful Guide (Nginx, certbot) => https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+	REPO =>  https://github.com/wmnnd/nginx-certbot
+
+Super Useful Guide 3 => https://karthickcse05.medium.com/setup-https-for-nginx-on-aws-ec2-linux-instance-using-docker-certbot-lets-encrypt-b4345ab58ddb
+
+Testing Issues with SSL Cert => https://www.ssllabs.com/ssltest/analyze.html?d=www.beeta.services&latest
+
+Google toolbox to Control if TXT record (acme challenge) is propagated => https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.www.beeta.services
+
+Amazon official guide for Lightsail => https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-using-lets-encrypt-certificates-with-nginx
+
+Configure Nginx on AWS EC2 Linux => https://medium.datadriveninvestor.com/nginx-server-ssl-setup-on-aws-ec2-linux-b6bb454e2ef2
+
+SSL Certificate Checker => https://www.sslshopper.com/ssl-checker.html#hostname=www.beeta.services
+
+Nginx Configuration => https://www.nginx.com/resources/wiki/start/topics/examples/full/
+
+Nginx Configuration 2 => https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/
+
+
